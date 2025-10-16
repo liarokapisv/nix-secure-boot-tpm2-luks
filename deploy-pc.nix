@@ -1,5 +1,6 @@
 {
   inputs,
+  self',
 }:
 {
   pkgs,
@@ -33,6 +34,7 @@
 
   users = {
     mutableUsers = true;
+
     users = {
       deploy = {
         isNormalUser = true;
@@ -58,6 +60,7 @@
   };
 
   environment.systemPackages = with pkgs; [
+    self'.packages.register-to-netbird
     hello
     sbctl
     tpm2-tools

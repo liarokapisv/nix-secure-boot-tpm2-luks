@@ -1,8 +1,8 @@
-{ inputs }:
-{ pkgs }:
+{ inputs, self' }:
+{ pkgs, lib }:
 let
-  inherit (pkgs.hostPlatform) system;
-  inherit (inputs.self.packages.${system}) installer-iso;
+  qemu-common = import "${inputs.nixpkgs}/nixos/lib/qemu-common.nix" { inherit pkgs lib; };
+  inherit (self'.packages) iso;
 in
 pkgs.writeShellScriptBin "iso-vm" ''
   set -euo pipefail
@@ -39,7 +39,7 @@ pkgs.writeShellScriptBin "iso-vm" ''
   fi
 
   # Installer ISO path
-  INSTALLER_ISO="${installer-iso}/iso/${installer-iso.isoName}"
+  INSTALLER_ISO="${iso}/iso/${iso.isoName}"
 
   if [ ! -S "$STATE_DIR/tpm/swtpm-sock" ]; then
     echo "Starting TPM emulator..."
@@ -50,7 +50,7 @@ pkgs.writeShellScriptBin "iso-vm" ''
     echo "TPM socket already exists, reusing..."
   fi
 
-  exec ${pkgs.qemu}/bin/qemu-system-x86_64 \
+  exec ${qemu-common.qemuBinary pkgs.qemu}/bin/qemu-system-x86_64 \
     -enable-kvm \
     -m 4096 \
     -smp 4 \

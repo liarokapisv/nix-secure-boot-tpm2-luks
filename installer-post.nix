@@ -1,5 +1,6 @@
 {
   inputs,
+  self',
   target,
 }:
 {
@@ -29,7 +30,7 @@ in
   environment.systemPackages = with pkgs; [
     sbctl
     tpm2-tools
-    inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.register-to-netbird
+    self'.packages.register-to-netbird
   ];
 
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
